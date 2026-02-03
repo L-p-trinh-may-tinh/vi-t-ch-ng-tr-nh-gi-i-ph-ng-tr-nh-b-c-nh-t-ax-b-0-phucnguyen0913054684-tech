@@ -1,0 +1,34 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Nghiem duy nhat
+      id: nghiem-duy-nhat
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Nghiem duy nhat
+        setup-command: gcc main.c -o main
+        command: "./main"
+        input: |-
+          2
+          -4
+        expected-output: ".*2\\.0.*"
+        comparison-method: contains
+        timeout: 10
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        NGHIEM-DUY-NHAT_RESULTS: "${{steps.nghiem-duy-nhat.outputs.result}}"
+      with:
+        runners: nghiem-duy-nhat
